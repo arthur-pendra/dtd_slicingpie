@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slicing Pie — Equity Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0d0b;
+    --bg-elev: #16140f;
+    --bg-card: #1a1812;
+    --line: #2a2620;
+    --line-soft: #211e18;
+    --text: #f4ede0;
+    --text-dim: #8a8174;
+    --text-faint: #4a443a;
+    --accent: #d97f4c;
+    --gold: #c9a572;
+    --green: #7a9b8e;
+    --sem: #d97f4c;
+    --renzo: #c9a572;
+    --arthur: #7a9b8e;
+    --stan: #9b6b8a;
+    --serif: 'Fraunces', Georgia, serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text); font-family: var(--mono);
+    font-size: 14px; line-height: 1.6; min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at top left, rgba(217, 127, 76, 0.04), transparent 50%),
+      radial-gradient(ellipse at bottom right, rgba(201, 165, 114, 0.03), transparent 50%);
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 56px 32px 80px; }
+
+  /* HEADER */
+  header { margin-bottom: 64px; }
+  .brand-label {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--text-dim); margin-bottom: 10px;
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 400; font-size: 64px;
+    line-height: 1; letter-spacing: -0.03em; font-style: italic; margin-bottom: 24px;
+  }
+  h1 em { font-style: normal; color: var(--accent); }
+  .intro-text {
+    font-family: var(--serif); font-size: 21px; line-height: 1.5;
+    color: var(--text-dim); max-width: 760px; font-weight: 300;
+  }
+  .intro-text strong { color: var(--text); font-weight: 400; }
+
+  /* SECTION */
+  .section { margin-bottom: 72px; }
+  .section-head {
+    margin-bottom: 28px; padding-bottom: 14px; border-bottom: 1px solid var(--line);
+  }
+  .section-num {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
+  }
+  .section-title {
+    font-family: var(--serif); font-size: 32px; font-weight: 400;
+    letter-spacing: -0.02em; line-height: 1.1;
+  }
+  .section-title em { color: var(--gold); font-style: italic; }
+
+  /* EXPLAINER CARDS */
+  .explainer { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+  .explainer-full { grid-column: 1 / -1; }
+  .ex-card {
+    background: var(--bg-card); border: 1px solid var(--line); padding: 32px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .ex-card.highlight { border-color: var(--accent); }
+  .ex-card.highlight::before {
+    content: ''; display: block; width: 32px; height: 2px; background: var(--accent);
+  }
+  .ex-label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--text-dim);
+  }
+  .ex-title {
+    font-family: var(--serif); font-size: 24px; font-weight: 400;
+    letter-spacing: -0.01em; line-height: 1.2; color: var(--text);
+  }
+  .ex-body { color: var(--text-dim); font-size: 13px; line-height: 1.7; }
+  .ex-body p { margin-bottom: 12px; }
+  .ex-body p:last-child { margin-bottom: 0; }
+  .ex-body strong { color: var(--text); font-weight: 500; }
+  .ex-body .accent { color: var(--accent); }
+  .ex-body .gold { color: var(--gold); }
+
+  /* TABLE INSIDE EXPLAINER */
+  .ex-table {
+    width: 100%; border-collapse: collapse; font-size: 12px; margin: 8px 0;
+  }
+  .ex-table th, .ex-table td {
+    text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line-soft);
+  }
+  .ex-table th {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-faint); font-weight: 400;
+  }
+  .ex-table td { color: var(--text-dim); }
+  .ex-table td strong { color: var(--text); }
+  .ex-table td.num { text-align: right; font-family: var(--mono); }
+  .ex-table tr:last-child td { border-bottom: none; }
+
+  /* FORMULA */
+  .formula {
+    background: var(--bg-elev); border: 1px solid var(--line-soft); padding: 18px 24px;
+    font-family: var(--serif); font-size: 18px; color: var(--text); margin: 12px 0;
+    border-left: 2px solid var(--accent);
+  }
+  .formula em { color: var(--gold); font-style: italic; }
+  .formula .small { font-size: 13px; color: var(--text-dim); display: block; margin-top: 6px; font-family: var(--mono); }
+
+  /* RATES TABLE */
+  .rates-table {
+    width: 100%; border-collapse: collapse; background: var(--bg-card);
+    border: 1px solid var(--line);
+  }
+  .rates-table th {
+    text-align: left; padding: 16px 24px; font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-dim);
+    border-bottom: 1px solid var(--line); font-weight: 400;
+  }
+  .rates-table th.num { text-align: right; }
+  .rates-table td {
+    padding: 18px 24px; border-bottom: 1px solid var(--line-soft); font-size: 13px;
+  }
+  .rates-table td.role { font-family: var(--serif); font-size: 16px; color: var(--text); }
+  .rates-table td.range { color: var(--text-dim); }
+  .rates-table td.used { font-family: var(--serif); font-size: 18px; color: var(--accent); text-align: right; }
+  .rates-table tr:last-child td { border-bottom: none; }
+
+  /* PIE CARD */
+  .pie-card {
+    background: var(--bg-card); border: 1px solid var(--line); padding: 40px;
+  }
+  .stakeholders { display: flex; flex-direction: column; gap: 24px; }
+  .stakeholder {
+    display: grid; grid-template-columns: 160px 1fr 100px; align-items: center; gap: 24px;
+  }
+  .stakeholder-name { display: flex; flex-direction: column; gap: 3px; }
+  .stakeholder-name .name {
+    font-family: var(--serif); font-size: 22px; letter-spacing: -0.01em;
+  }
+  .stakeholder-name .role {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-faint);
+  }
+  .bar-wrap { height: 8px; background: var(--line-soft); position: relative; overflow: hidden; }
+  .bar-fill { height: 100%; transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
+  .stakeholder-pct {
+    font-family: var(--serif); font-size: 32px; text-align: right; letter-spacing: -0.02em;
+  }
+  .stakeholder-pct .sym { color: var(--text-faint); font-size: 20px; }
+
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; }
+
+  /* BREAKDOWN TABLE */
+  .breakdown { background: var(--bg-card); border: 1px solid var(--line); }
+  table.bd { width: 100%; border-collapse: collapse; }
+  table.bd th {
+    text-align: left; padding: 16px 20px; font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-dim);
+    border-bottom: 1px solid var(--line); font-weight: 400;
+  }
+  table.bd th.num { text-align: right; }
+  table.bd td {
+    padding: 18px 20px; border-bottom: 1px solid var(--line-soft);
+    font-family: var(--mono); font-size: 13px;
+  }
+  table.bd td.num { text-align: right; }
+  table.bd td.name { font-family: var(--serif); font-size: 17px; }
+  table.bd tr:last-child td { border-bottom: none; }
+  table.bd tr.total td {
+    background: var(--bg-elev); color: var(--accent);
+    border-top: 1px solid var(--accent);
+  }
+
+  /* FORM */
+  .add-entry { background: var(--bg-card); border: 1px solid var(--line); padding: 32px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1.4fr auto; gap: 16px; align-items: end; }
+  .field { display: flex; flex-direction: column; gap: 8px; }
+  label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--text-dim);
+  }
+  select, input {
+    background: var(--bg); border: 1px solid var(--line); color: var(--text);
+    padding: 12px 14px; font-family: var(--mono); font-size: 13px; outline: none;
+    transition: border-color 0.2s ease;
+  }
+  select:focus, input:focus { border-color: var(--accent); }
+  button {
+    background: var(--accent); color: var(--bg); border: none; padding: 12px 24px;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; cursor: pointer; transition: background 0.2s ease; font-weight: 600;
+  }
+  button:hover { background: var(--gold); }
+  button.ghost {
+    background: transparent; color: var(--text-dim); border: 1px solid var(--line);
+  }
+  button.ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* LOG */
+  .log {
+    background: var(--bg-card); border: 1px solid var(--line);
+    max-height: 360px; overflow-y: auto;
+  }
+  .log::-webkit-scrollbar { width: 6px; }
+  .log::-webkit-scrollbar-track { background: var(--bg-card); }
+  .log::-webkit-scrollbar-thumb { background: var(--line); }
+  .log-entry {
+    display: grid; grid-template-columns: 90px 110px 1fr 100px 40px;
+    gap: 16px; padding: 14px 20px; border-bottom: 1px solid var(--line-soft);
+    align-items: center; font-size: 12px;
+  }
+  .log-entry:last-child { border-bottom: none; }
+  .log-entry .date { color: var(--text-faint); font-size: 11px; }
+  .log-entry .person { font-family: var(--serif); font-size: 14px; }
+  .log-entry .desc { color: var(--text-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .log-entry .slices { text-align: right; color: var(--accent); font-weight: 500; }
+  .log-entry .delete { color: var(--text-faint); cursor: pointer; text-align: center; transition: color 0.2s ease; }
+  .log-entry .delete:hover { color: var(--accent); }
+
+  /* SETTINGS */
+  .settings {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px;
+    background: var(--bg-card); border: 1px solid var(--line); padding: 24px;
+  }
+  .actions { display: flex; gap: 12px; margin-top: 20px; }
+
+  /* CALLOUT */
+  .callout {
+    background: var(--bg-elev); border-left: 2px solid var(--gold);
+    padding: 20px 28px; margin: 16px 0; font-family: var(--serif);
+    font-size: 16px; line-height: 1.5; color: var(--text-dim);
+  }
+  .callout strong { color: var(--text); font-weight: 500; }
+  .callout .label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 8px;
+  }
+
+  /* FREEZE TRIGGER */
+  .triggers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px; }
+  .trigger {
+    background: var(--bg-elev); padding: 20px; border: 1px solid var(--line-soft);
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .trigger-num {
+    font-family: var(--serif); font-size: 32px; color: var(--accent); line-height: 1;
+  }
+  .trigger-text { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+  .trigger-text strong { color: var(--text); }
+
+  footer {
+    margin-top: 96px; padding-top: 32px; border-top: 1px solid var(--line);
+    display: flex; justify-content: space-between; font-size: 11px;
+    color: var(--text-faint); letter-spacing: 0.1em;
+  }
+  footer .right { text-align: right; }
+
+  /* TABS */
+  .tabs {
+    display: flex; gap: 0; margin-bottom: 56px;
+    border-bottom: 1px solid var(--line); overflow-x: auto;
+  }
+  .tab {
+    padding: 16px 24px; font-family: var(--mono); font-size: 11px;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim);
+    cursor: pointer; border: none; background: none;
+    border-bottom: 2px solid transparent; transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab .dot { vertical-align: middle; }
+
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* PERSON HERO */
+  .person-header {
+    display: flex; flex-direction: column; gap: 8px; margin-bottom: 48px;
+  }
+  .person-header .person-label {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--text-dim);
+  }
+  .person-header .person-name {
+    font-family: var(--serif); font-size: 56px; font-weight: 400;
+    letter-spacing: -0.03em; line-height: 1;
+  }
+  .person-header .person-role {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em;
+    color: var(--text-faint); text-transform: uppercase; margin-top: 4px;
+  }
+
+  .person-stats {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 1px; background: var(--line); border: 1px solid var(--line);
+    margin-bottom: 48px;
+  }
+  .person-stat {
+    background: var(--bg-card); padding: 28px 24px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .person-stat-label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--text-dim);
+  }
+  .person-stat-value {
+    font-family: var(--serif); font-size: 42px; font-weight: 400;
+    letter-spacing: -0.02em; line-height: 1; color: var(--text);
+  }
+  .person-stat-value .unit { color: var(--text-faint); font-size: 18px; margin-left: 3px; }
+  .person-stat-value .cur { color: var(--text-faint); font-size: 18px; margin-right: 3px; }
+  .person-stat-detail { font-family: var(--mono); font-size: 11px; color: var(--text-dim); }
+
+  .person-stat.highlight { background: var(--bg-elev); }
+  .person-stat.highlight .person-stat-value { color: var(--accent); }
+
+  @media (max-width: 800px) {
+    .container { padding: 32px 20px; }
+    h1 { font-size: 42px; }
+    .intro-text { font-size: 17px; }
+    .explainer { grid-template-columns: 1fr; }
+    .form-grid { grid-template-columns: 1fr 1fr; }
+    .settings { grid-template-columns: 1fr 1fr; }
+    .stakeholder { grid-template-columns: 110px 1fr 70px; gap: 14px; }
+    .stakeholder-pct { font-size: 22px; }
+    .triggers { grid-template-columns: 1fr; }
+    .section-title { font-size: 24px; }
+    .person-stats { grid-template-columns: 1fr 1fr; }
+    .person-name { font-size: 38px !important; }
+    .person-stat-value { font-size: 32px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div class="brand-label">Pendra Studio · Equity Tracker</div>
+    <h1>Slicing <em>Pie</em></h1>
+    <p class="intro-text">
+      Een eerlijke manier om aandelen te verdelen in een startup waar mensen <strong>cash én tijd</strong> inbrengen op verschillende niveaus. De percentages updaten zich vanzelf naarmate iedereen meer of minder bijdraagt.
+    </p>
+  </header>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" data-view="overzicht">Overzicht</button>
+    <button class="tab" data-view="uitleg">Uitleg</button>
+    <button class="tab" data-view="sem"><span class="dot" style="background:var(--sem)"></span>Sem</button>
+    <button class="tab" data-view="renzo"><span class="dot" style="background:var(--renzo)"></span>Renzo</button>
+    <button class="tab" data-view="arthur"><span class="dot" style="background:var(--arthur)"></span>Arthur</button>
+    <button class="tab" data-view="stan"><span class="dot" style="background:var(--stan)"></span>Stan</button>
+  </div>
+
+  <!-- ============ UITLEG VIEW (de educatie) ============ -->
+  <div class="view" id="view-uitleg">
+
+  <!-- ============ 01 — DE LOGICA ============ -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">01 — De logica</div>
+      <h2 class="section-title">Hoe het <em>werkt</em></h2>
+    </div>
+
+    <div class="explainer">
+      <div class="ex-card highlight">
+        <div class="ex-label">Het idee</div>
+        <h3 class="ex-title">Iedereen krijgt slices van de taart</h3>
+        <div class="ex-body">
+          <p>Elke bijdrage aan het bedrijf — geld, onbetaalde uren, kosten uit eigen zak — wordt omgerekend naar <strong>"slices"</strong> (taartpunten). De marktwaarde van wat je inbrengt bepaalt hoeveel slices je krijgt.</p>
+          <div class="formula">
+            jouw % aandeel = <em>jouw slices ÷ totale slices</em>
+            <span class="small">Herberekend elke keer als iemand iets bijdraagt</span>
+          </div>
+          <p>Het mooie: niemand wordt benadeeld als iemand anders harder gaat werken of meer investeert. De percentages volgen vanzelf.</p>
+        </div>
+      </div>
+
+      <div class="ex-card">
+        <div class="ex-label">De drie inbreng-soorten</div>
+        <h3 class="ex-title">Cash · Tijd · Kosten</h3>
+        <div class="ex-body">
+          <p><span class="accent">CASH</span> — Geld dat je in het bedrijf stort. Direct risico, want weg = weg als het misgaat.</p>
+          <p><span class="accent">TIJD</span> — Uren waarvoor je niet (vol) betaald wordt. Wordt omgerekend tegen je marktconforme uurtarief.</p>
+          <p><span class="accent">KOSTEN</span> — Spullen of diensten die jij privé betaalt voor het bedrijf (hosting, software, materiaal). Telt mee als cash.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 02 — WAAROM UURLOON ============ -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">02 — Marktconform uurloon</div>
+      <h2 class="section-title">Waarom je <em>echte tarief</em> telt</h2>
+    </div>
+
+    <div class="explainer">
+      <div class="ex-card explainer-full">
+        <div class="ex-label">De redenering</div>
+        <div class="ex-body" style="font-size: 14px;">
+          <p>Als jij onbetaald 10 uur werkt voor het bedrijf en je gewone tarief is €70/uur, dan "geef" je het bedrijf <strong>€700 aan waarde</strong>. Dat is wat je had kunnen factureren bij een andere klant.</p>
+          <p><strong>Te laag inschatten</strong> = jezelf benadelen tegenover de cash-investeerders. <strong>Te hoog inschatten</strong> = oneerlijk t.o.v. anderen die ook tijd inbrengen.</p>
+          <p style="color: var(--gold);">Houd het aan de conservatieve kant van je marktrange. Zo blijft cash z'n proportionele zwaarte behouden, en is de berekening niet aan te vechten.</p>
+        </div>
+      </div>
+    </div>
+
+    <table class="rates-table">
+      <thead>
+        <tr>
+          <th>Rol</th>
+          <th class="num">Markt NL 2026 (freelance ZZP)</th>
+          <th class="num">Wij gebruiken</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="role"><span class="dot" style="background:var(--sem)"></span>Sem · Marketeer</td>
+          <td class="range num">€76 – €86 / uur <span style="color:var(--text-faint); font-size:10px;">(gem. €82, Knab 2026)</span></td>
+          <td class="used">€70</td>
+        </tr>
+        <tr>
+          <td class="role"><span class="dot" style="background:var(--renzo)"></span>Renzo · Finance + Marketing</td>
+          <td class="range num">€82 – €120 / uur <span style="color:var(--text-faint); font-size:10px;">(dual skill premium)</span></td>
+          <td class="used">€70</td>
+        </tr>
+        <tr>
+          <td class="role"><span class="dot" style="background:var(--arthur)"></span>Arthur · Designer + Developer</td>
+          <td class="range num">€75 – €120 / uur <span style="color:var(--text-faint); font-size:10px;">(creative dev medior-senior)</span></td>
+          <td class="used">€85</td>
+        </tr>
+        <tr>
+          <td class="role"><span class="dot" style="background:var(--stan)"></span>Stan · Cameraman + Creative</td>
+          <td class="range num">€60 – €120 / uur <span style="color:var(--text-faint); font-size:10px;">(camera €80 gem. + creative premium)</span></td>
+          <td class="used">€70</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <div class="label">De keuzes uitgelegd</div>
+      <strong>Sem &amp; Renzo gelijk op €70</strong> — beide zijn parttime co-founders met overlappende verantwoordelijkheid. Door ze gelijk te zetten voorkom je dat de verdeling tussen hen scheef groeit. Onder het marketing-gemiddelde van €82 omdat ze parttime werken.<br><br>
+      <strong>Arthur op €85</strong> — designer + dev combo (Three.js, GSAP, Hydrogen, Blender) rechtvaardigt premium boven pure dev (€70-120). Pendra Studio track record telt mee.<br><br>
+      <strong>Stan op €70</strong> — camera + creative (editing, art direction) tilt hem boven puur camera-werk uit. Gelijk met Sem/Renzo qua niveau van inbreng.<br><br>
+      Bronnen: <strong>Knab Zzp Uurtarievenboekje 2026</strong>, Freelance.nl Markt Index Q2 2026, ZZPservicedesk, Ubuntu Staffing.
+    </div>
+  </section>
+
+  <!-- ============ 03 — WAAROM CASH × 4 ============ -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">03 — Cash multiplier</div>
+      <h2 class="section-title">Waarom geld <em>×4</em> telt</h2>
+    </div>
+
+    <div class="ex-card explainer-full">
+      <div class="ex-label">Het hart van Slicing Pie</div>
+      <h3 class="ex-title">Cash is geen tijd, en tijd is geen cash</h3>
+      <div class="ex-body" style="font-size: 14px;">
+        <p>Als je €1.000 in het bedrijf stort, voelt dat anders dan €1.000 aan tijd inbrengen. Je dénkt dat ze gelijkwaardig zijn — ze zijn dat niet. Daarom rekent Slicing Pie cash <strong>vier keer zo zwaar</strong>:</p>
+
+        <table class="ex-table" style="margin-top: 16px;">
+          <thead>
+            <tr><th></th><th>Cash</th><th>Onbetaalde uren</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Risico</strong></td>
+              <td>Geld is meteen weg als bedrijf faalt</td>
+              <td>Tijd is "weg" maar je leefde nog steeds</td>
+            </tr>
+            <tr>
+              <td><strong>Liquiditeit</strong></td>
+              <td>Was direct beschikbaar voor andere dingen</td>
+              <td>Werk had ook alternatief kunnen vinden</td>
+            </tr>
+            <tr>
+              <td><strong>Belasting</strong></td>
+              <td>Al na-belast — uit netto inkomen</td>
+              <td>Geen belasting betaald over die uren</td>
+            </tr>
+            <tr>
+              <td><strong>Direct effect</strong></td>
+              <td>Weg uit je privéleven</td>
+              <td>Was je vrije tijd, niet je leefkosten</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="formula" style="margin-top: 20px;">
+          €1 cash → <em>4 slices</em><br>
+          €1 aan tijd → <em>1 slice</em>
+        </div>
+
+        <p>De multiplier <strong>×4</strong> is de standaard uit Mike Moyer's Slicing Pie methodologie. Sommigen kiezen ×2 of ×3 voor minder kapitaal-intensieve sectoren — voor jullie SaaS waar dev-tijd dominant is, kun je dit later eventueel naar ×3 verlagen als de cash-investeerders het ermee eens zijn.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 04 — BTW & BELASTING ============ -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">04 — BTW & belasting</div>
+      <h2 class="section-title">Waarom hier <em>geen BTW</em> bij komt</h2>
+    </div>
+
+    <div class="explainer">
+      <div class="ex-card">
+        <div class="ex-label">Sweat equity ≠ factuur</div>
+        <h3 class="ex-title">Je bent geen leverancier — je bent aandeelhouder</h3>
+        <div class="ex-body">
+          <p>Deze tracker meet sweat equity: onbetaalde inbreng tegen aandelen. Dat is geen omzet. Er wordt geen factuur gestuurd. Er is dus <strong>geen BTW</strong>.</p>
+          <p>Pas zodra het bedrijf je daadwerkelijk uitbetaalt — via factuur of loon — komt belasting in beeld.</p>
+        </div>
+      </div>
+
+      <div class="ex-card">
+        <div class="ex-label">Wat wel belast wordt</div>
+        <h3 class="ex-title">Bij uitbetaling, niet bij inbreng</h3>
+        <div class="ex-body">
+          <p><strong>ZZP-factuur:</strong> 21% BTW erbij (terug te vorderen door bedrijf, dus netto neutraal).</p>
+          <p><strong>DGA-loon:</strong> loonbelasting en sociale lasten via de holding.</p>
+          <p><strong>Dividend / verkoop:</strong> Box 2 belasting (~25-31%) op de uitkering of exit-waarde.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout" style="border-left-color: var(--accent);">
+      <div class="label" style="color: var(--accent);">Cruciaal</div>
+      Leg de Slicing Pie afspraken vast in een <strong>aandeelhoudersovereenkomst bij de notaris</strong>. Zonder papieren kan de Belastingdienst later zeggen dat de aandelen "loon in natura" waren, en dan kom je in de problemen. Dit is <strong>geen optioneel</strong> stapje.
+    </div>
+  </section>
+
+  <!-- ============ 05 — WANNEER BEVRIEST ============ -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">05 — Freeze events</div>
+      <h2 class="section-title">Wanneer de taart <em>definitief</em> wordt</h2>
+    </div>
+
+    <div class="ex-card explainer-full">
+      <div class="ex-body">
+        <p>De percentages zijn nu nog "vloeibaar". Bij één van deze drie momenten <strong>bevriest</strong> de verdeling — vanaf dan staan de aandelen vast:</p>
+      </div>
+      <div class="triggers">
+        <div class="trigger">
+          <div class="trigger-num">01</div>
+          <div class="trigger-text"><strong>Break-even</strong><br>Het bedrijf draait genoeg cashflow om iedereen marktconform te betalen. Vanaf nu = salaris/factuur, geen sweat equity meer.</div>
+        </div>
+        <div class="trigger">
+          <div class="trigger-num">02</div>
+          <div class="trigger-text"><strong>Externe investering</strong><br>Een investeerder (angel/VC) komt erin. Die eist een vaste %-verdeling — dus de verdeling op dat moment is de definitieve verdeling.</div>
+        </div>
+        <div class="trigger">
+          <div class="trigger-num">03</div>
+          <div class="trigger-text"><strong>Verkoop of exit</strong><br>Iemand koopt het bedrijf. De % op het moment van de deal bepaalt wie wat krijgt van de opbrengst.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  </div><!-- end view-uitleg -->
+
+  <!-- ============ OVERZICHT VIEW (huidige stand + tracker) ============ -->
+  <div class="view active" id="view-overzicht">
+
+  <!-- ============ 06 — HUIDIGE VERDELING ============ -->
+  <section class="section" style="margin-top: 0;">
+    <div class="section-head">
+      <div class="section-num">De stand vandaag</div>
+      <h2 class="section-title">Huidige <em>verdeling</em></h2>
+    </div>
+    <div class="pie-card">
+      <div class="stakeholders" id="stakeholders"></div>
+    </div>
+  </section>
+
+  <!-- ============ 07 — BREAKDOWN ============ -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">Wie heeft wat ingebracht</div>
+      <h2 class="section-title">De <em>breakdown</em></h2>
+    </div>
+    <div class="breakdown">
+      <table class="bd">
+        <thead>
+          <tr>
+            <th>Persoon</th>
+            <th class="num">Investering</th>
+            <th class="num">Bijdrage uitbet.</th>
+            <th class="num">Uren</th>
+            <th class="num">Uren-waarde</th>
+            <th class="num">Uitbetaald</th>
+            <th class="num">Slices</th>
+            <th class="num">%</th>
+          </tr>
+        </thead>
+        <tbody id="breakdown-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ 08 — INBRENG TOEVOEGEN ============ -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">Bijhouden</div>
+      <h2 class="section-title">Nieuwe <em>inbreng</em> loggen</h2>
+    </div>
+    <div class="add-entry">
+      <div class="form-grid">
+        <div class="field">
+          <label>Persoon</label>
+          <select id="entry-person">
+            <option value="sem">Sem</option>
+            <option value="renzo">Renzo</option>
+            <option value="arthur" selected>Arthur</option>
+            <option value="stan">Stan</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Type</label>
+          <select id="entry-type">
+            <option value="hours">Uren</option>
+            <option value="cash">Directe investering</option>
+            <option value="payout_contrib">Bijdrage uitbetaling partner</option>
+            <option value="expense">Kosten (eigen zak)</option>
+            <option value="paid">Uitbetaling ontvangen</option>
+          </select>
+        </div>
+        <div class="field">
+          <label id="amount-label">Aantal uren</label>
+          <input type="number" id="entry-amount" step="0.1" min="0" placeholder="0">
+        </div>
+        <div class="field">
+          <label>Omschrijving</label>
+          <input type="text" id="entry-desc" placeholder="Wat heb je gedaan?">
+        </div>
+        <button id="add-btn">Toevoegen</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 09 — HISTORIE ============ -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">Wat er tot nu toe is gelogd</div>
+      <h2 class="section-title">Alle <em>entries</em></h2>
+    </div>
+    <div class="log" id="log"></div>
+  </section>
+
+  <!-- ============ 10 — INSTELLINGEN ============ -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">Instellingen</div>
+      <h2 class="section-title">Tarieven & <em>multiplier</em></h2>
+    </div>
+    <div class="settings">
+      <div class="field">
+        <label>Cash multiplier</label>
+        <input type="number" id="setting-multiplier" step="0.5" min="1" value="4">
+      </div>
+      <div class="field">
+        <label>Sem €/uur</label>
+        <input type="number" id="setting-rate-sem" step="5" min="0" value="70">
+      </div>
+      <div class="field">
+        <label>Renzo €/uur</label>
+        <input type="number" id="setting-rate-renzo" step="5" min="0" value="70">
+      </div>
+      <div class="field">
+        <label>Arthur €/uur</label>
+        <input type="number" id="setting-rate-arthur" step="5" min="0" value="85">
+      </div>
+      <div class="field">
+        <label>Stan €/uur</label>
+        <input type="number" id="setting-rate-stan" step="5" min="0" value="70">
+      </div>
+    </div>
+    <div class="actions">
+      <button class="ghost" id="save-settings">Opslaan</button>
+      <button class="ghost" id="reset-data">Reset alle data</button>
+      <button class="ghost" id="export-data">Export JSON</button>
+    </div>
+  </section>
+
+  </div><!-- end view-overzicht -->
+
+  <!-- ============ PERSOON VIEWS ============ -->
+  <div class="view" id="view-sem"></div>
+  <div class="view" id="view-renzo"></div>
+  <div class="view" id="view-arthur"></div>
+  <div class="view" id="view-stan"></div>
+
+  <footer>
+    <div>SLICING PIE METHOD · MIKE MOYER</div>
+    <div class="right" id="last-updated">—</div>
+  </footer>
+
+</div>
+
+<script>
+  const PEOPLE = {
+    sem: { name: 'Sem', role: 'Co-founder · Marketeer', color: 'var(--sem)' },
+    renzo: { name: 'Renzo', role: 'Co-founder · Finance + Marketing', color: 'var(--renzo)' },
+    arthur: { name: 'Arthur', role: 'Designer + Developer', color: 'var(--arthur)' },
+    stan: { name: 'Stan', role: 'Cameraman + Creative', color: 'var(--stan)' }
+  };
+
+  let state = {
+    entries: [],
+    settings: { multiplier: 4, rates: { sem: 70, renzo: 70, arthur: 85, stan: 70 } }
+  };
+
+  const STORAGE_KEY = 'equity-state-v9';
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        state = { ...state, ...JSON.parse(raw) };
+        return true;
+      }
+    } catch(e) {}
+    return false;
+  }
+
+  function saveState() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      const el = document.getElementById('last-updated');
+      if (el) el.textContent =
+        'BIJGEWERKT: ' + new Date().toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' }).toUpperCase();
+    } catch(e) { console.error('Save failed', e); }
+  }
+
+  function seedInitialData() {
+    const now = new Date().toISOString();
+    state.entries = [
+      { id: 's1', date: now, person: 'sem', type: 'cash', amount: 15000, desc: 'Initiële investering' },
+      { id: 's2', date: now, person: 'renzo', type: 'cash', amount: 15000, desc: 'Initiële investering' },
+      { id: 's3', date: now, person: 'sem', type: 'hours', amount: 900, desc: 'Marketing + bedrijfsvoering (1 jaar parttime, ~17u/wk)' },
+      { id: 's4', date: now, person: 'renzo', type: 'hours', amount: 900, desc: 'Finance + marketing (1 jaar parttime, ~17u/wk)' },
+      { id: 's6', date: now, person: 'stan', type: 'hours', amount: 50, desc: 'Camerawerk' },
+      // === DTD Basic build (44 active days, 243u total, 30 dec 2025 → 6 jun 2026) ===
+      { id: "dtd-1", date: "2025-12-30T12:00:00Z", person: "arthur", type: "hours", amount: 3.31, desc: "DTD Basic — 7 commits" },
+      { id: "dtd-2", date: "2026-01-01T12:00:00Z", person: "arthur", type: "hours", amount: 4.0, desc: "DTD Basic — 2 commits" },
+      { id: "dtd-3", date: "2026-01-03T12:00:00Z", person: "arthur", type: "hours", amount: 2.55, desc: "DTD Basic — 2 commits" },
+      { id: "dtd-4", date: "2026-01-11T12:00:00Z", person: "arthur", type: "hours", amount: 2.0, desc: "DTD Basic — 1 commits" },
+      { id: "dtd-5", date: "2026-01-12T12:00:00Z", person: "arthur", type: "hours", amount: 8.29, desc: "DTD Basic — 8 commits" },
+      { id: "dtd-6", date: "2026-01-13T12:00:00Z", person: "arthur", type: "hours", amount: 7.68, desc: "DTD Basic — 8 commits" },
+      { id: "dtd-7", date: "2026-01-14T12:00:00Z", person: "arthur", type: "hours", amount: 8.65, desc: "DTD Basic — 11 commits" },
+      { id: "dtd-8", date: "2026-01-15T12:00:00Z", person: "arthur", type: "hours", amount: 5.22, desc: "DTD Basic — 16 commits" },
+      { id: "dtd-9", date: "2026-01-17T12:00:00Z", person: "arthur", type: "hours", amount: 8.39, desc: "DTD Basic — 42 commits" },
+      { id: "dtd-10", date: "2026-01-18T12:00:00Z", person: "arthur", type: "hours", amount: 6.73, desc: "DTD Basic — 10 commits" },
+      { id: "dtd-11", date: "2026-01-19T12:00:00Z", person: "arthur", type: "hours", amount: 13.04, desc: "DTD Basic — 31 commits" },
+      { id: "dtd-12", date: "2026-01-20T12:00:00Z", person: "arthur", type: "hours", amount: 10.54, desc: "DTD Basic — 17 commits" },
+      { id: "dtd-13", date: "2026-01-22T12:00:00Z", person: "arthur", type: "hours", amount: 16.06, desc: "DTD Basic — 33 commits" },
+      { id: "dtd-14", date: "2026-01-23T12:00:00Z", person: "arthur", type: "hours", amount: 4.0, desc: "DTD Basic — 2 commits" },
+      { id: "dtd-15", date: "2026-01-25T12:00:00Z", person: "arthur", type: "hours", amount: 9.37, desc: "DTD Basic — 22 commits" },
+      { id: "dtd-16", date: "2026-01-26T12:00:00Z", person: "arthur", type: "hours", amount: 2.0, desc: "DTD Basic — 1 commits" },
+      { id: "dtd-17", date: "2026-01-27T12:00:00Z", person: "arthur", type: "hours", amount: 3.31, desc: "DTD Basic — 2 commits" },
+      { id: "dtd-18", date: "2026-01-28T12:00:00Z", person: "arthur", type: "hours", amount: 10.36, desc: "DTD Basic — 41 commits" },
+      { id: "dtd-19", date: "2026-01-29T12:00:00Z", person: "arthur", type: "hours", amount: 9.98, desc: "DTD Basic — 19 commits" },
+      { id: "dtd-20", date: "2026-01-30T12:00:00Z", person: "arthur", type: "hours", amount: 11.04, desc: "DTD Basic — 15 commits" },
+      { id: "dtd-21", date: "2026-02-01T12:00:00Z", person: "arthur", type: "hours", amount: 9.51, desc: "DTD Basic — 22 commits" },
+      { id: "dtd-22", date: "2026-02-02T12:00:00Z", person: "arthur", type: "hours", amount: 2.6, desc: "DTD Basic — 3 commits" },
+      { id: "dtd-23", date: "2026-02-04T12:00:00Z", person: "arthur", type: "hours", amount: 8.11, desc: "DTD Basic — 10 commits" },
+      { id: "dtd-24", date: "2026-02-05T12:00:00Z", person: "arthur", type: "hours", amount: 14.52, desc: "DTD Basic — 37 commits" },
+      { id: "dtd-25", date: "2026-02-07T12:00:00Z", person: "arthur", type: "hours", amount: 8.76, desc: "DTD Basic — 30 commits" },
+      { id: "dtd-26", date: "2026-02-08T12:00:00Z", person: "arthur", type: "hours", amount: 2.0, desc: "DTD Basic — 1 commits" },
+      { id: "dtd-27", date: "2026-02-09T12:00:00Z", person: "arthur", type: "hours", amount: 2.96, desc: "DTD Basic — 7 commits" },
+      { id: "dtd-28", date: "2026-02-10T12:00:00Z", person: "arthur", type: "hours", amount: 3.32, desc: "DTD Basic — 5 commits" },
+      { id: "dtd-29", date: "2026-02-11T12:00:00Z", person: "arthur", type: "hours", amount: 4.09, desc: "DTD Basic — 3 commits" },
+      { id: "dtd-30", date: "2026-02-13T12:00:00Z", person: "arthur", type: "hours", amount: 2.87, desc: "DTD Basic — 3 commits" },
+      { id: "dtd-31", date: "2026-04-10T12:00:00Z", person: "arthur", type: "hours", amount: 4.68, desc: "DTD Basic — 5 commits" },
+      { id: "dtd-32", date: "2026-04-11T12:00:00Z", person: "arthur", type: "hours", amount: 4.49, desc: "DTD Basic — 4 commits" },
+      { id: "dtd-33", date: "2026-04-12T12:00:00Z", person: "arthur", type: "hours", amount: 2.53, desc: "DTD Basic — 2 commits" },
+      { id: "dtd-34", date: "2026-04-13T12:00:00Z", person: "arthur", type: "hours", amount: 2.0, desc: "DTD Basic — 1 commits" },
+      { id: "dtd-35", date: "2026-04-14T12:00:00Z", person: "arthur", type: "hours", amount: 2.0, desc: "DTD Basic — 2 commits" },
+      { id: "dtd-36", date: "2026-04-29T12:00:00Z", person: "arthur", type: "hours", amount: 2.0, desc: "DTD Basic — 1 commits" },
+      { id: "dtd-37", date: "2026-05-01T12:00:00Z", person: "arthur", type: "hours", amount: 2.0, desc: "DTD Basic — 1 commits" },
+      { id: "dtd-38", date: "2026-05-02T12:00:00Z", person: "arthur", type: "hours", amount: 2.25, desc: "DTD Basic — 2 commits" },
+      { id: "dtd-39", date: "2026-05-06T12:00:00Z", person: "arthur", type: "hours", amount: 5.35, desc: "DTD Basic — 9 commits" },
+      { id: "dtd-40", date: "2026-05-07T12:00:00Z", person: "arthur", type: "hours", amount: 2.31, desc: "DTD Basic — 2 commits" },
+      { id: "dtd-41", date: "2026-05-12T12:00:00Z", person: "arthur", type: "hours", amount: 2.0, desc: "DTD Basic — 1 commits" },
+      { id: "dtd-42", date: "2026-05-18T12:00:00Z", person: "arthur", type: "hours", amount: 2.05, desc: "DTD Basic — 3 commits" },
+      { id: "dtd-43", date: "2026-05-21T12:00:00Z", person: "arthur", type: "hours", amount: 2.0, desc: "DTD Basic — 1 commits" },
+      { id: "dtd-44", date: "2026-06-06T12:00:00Z", person: "arthur", type: "hours", amount: 2.07, desc: "DTD Basic — 2 commits" },
+      // === Uitbetaling DTD Shopify Hydrogen (factuur 2026-0003, betaald 26 mrt 2026) ===
+      { id: "pay-1", date: "2026-03-26T12:00:00Z", person: "arthur", type: "paid", amount: 625, desc: "Factuur 2026-0003 — DTD Shopify Hydrogen Storefront (€625 excl. BTW)" },
+      // === Bijdrage Sem & Renzo om Arthur's factuur te dekken (gesplit 50/50) ===
+      { id: "split-sem", date: "2026-03-26T12:00:00Z", person: "sem", type: "payout_contrib", amount: 312.50, desc: "Bijdrage uitbetaling factuur 2026-0003 (€625 gesplit 50/50)" },
+      { id: "split-renzo", date: "2026-03-26T12:00:00Z", person: "renzo", type: "payout_contrib", amount: 312.50, desc: "Bijdrage uitbetaling factuur 2026-0003 (€625 gesplit 50/50)" }
+    ];
+  }
+
+  function calcSlices(e) {
+    const r = state.settings.rates[e.person] || 50;
+    const m = state.settings.multiplier;
+    if (e.type === 'cash' || e.type === 'expense') return e.amount * m;
+    if (e.type === 'payout_contrib') return e.amount * m;
+    if (e.type === 'hours') return e.amount * r;
+    if (e.type === 'paid') return -e.amount;
+    return 0;
+  }
+
+  function getTotals() {
+    const t = {};
+    Object.keys(PEOPLE).forEach(p => { t[p] = { investment: 0, payoutContrib: 0, expense: 0, hours: 0, hoursValue: 0, paid: 0, slices: 0 }; });
+    state.entries.forEach(e => {
+      if (!t[e.person]) return;
+      if (e.type === 'cash') t[e.person].investment += e.amount;
+      if (e.type === 'expense') t[e.person].expense += e.amount;
+      if (e.type === 'payout_contrib') t[e.person].payoutContrib += e.amount;
+      if (e.type === 'hours') {
+        t[e.person].hours += e.amount;
+        t[e.person].hoursValue += e.amount * (state.settings.rates[e.person] || 50);
+      }
+      if (e.type === 'paid') t[e.person].paid += e.amount;
+      t[e.person].slices += calcSlices(e);
+    });
+    // Helper: total cash for backward compat
+    Object.keys(t).forEach(k => { t[k].cash = t[k].investment + t[k].payoutContrib + t[k].expense; });
+    return t;
+  }
+
+  const fmt = new Intl.NumberFormat('nl-NL');
+  const fmtPct = (n) => n.toFixed(1).replace('.', ',');
+
+  function renderStakeholders() {
+    const c = document.getElementById('stakeholders');
+    const t = getTotals();
+    const total = Object.values(t).reduce((s, x) => s + x.slices, 0);
+    c.innerHTML = '';
+    Object.entries(PEOPLE).forEach(([k, p]) => {
+      const pct = total > 0 ? (t[k].slices / total) * 100 : 0;
+      const row = document.createElement('div');
+      row.className = 'stakeholder';
+      row.innerHTML = `
+        <div class="stakeholder-name">
+          <div class="name"><span class="dot" style="background:${p.color}"></span>${p.name}</div>
+          <div class="role">${p.role}</div>
+        </div>
+        <div class="bar-wrap"><div class="bar-fill" style="width:${pct}%; background:${p.color}"></div></div>
+        <div class="stakeholder-pct">${fmtPct(pct)}<span class="sym">%</span></div>`;
+      c.appendChild(row);
+    });
+  }
+
+  function renderBreakdown() {
+    const b = document.getElementById('breakdown-body');
+    const t = getTotals();
+    const total = Object.values(t).reduce((s, x) => s + x.slices, 0);
+    b.innerHTML = '';
+    let ti = 0, tpc = 0, th = 0, thv = 0, tp = 0, ts = 0;
+    Object.entries(PEOPLE).forEach(([k, p]) => {
+      const r = t[k];
+      const pct = total > 0 ? (r.slices / total) * 100 : 0;
+      ti += r.investment; tpc += r.payoutContrib; th += r.hours; thv += r.hoursValue; tp += r.paid; ts += r.slices;
+      const investCell = r.investment > 0 ? `<td class="num">€${fmt.format(r.investment)}</td>` : `<td class="num" style="color:var(--text-faint)">—</td>`;
+      const contribCell = r.payoutContrib > 0 ? `<td class="num" style="color:var(--gold)">€${fmt.format(r.payoutContrib)}</td>` : `<td class="num" style="color:var(--text-faint)">—</td>`;
+      const paidCell = r.paid > 0 ? `<td class="num" style="color:var(--red)">−€${fmt.format(r.paid)}</td>` : `<td class="num" style="color:var(--text-faint)">—</td>`;
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td class="name"><span class="dot" style="background:${p.color}"></span>${p.name}</td>
+        ${investCell}
+        ${contribCell}
+        <td class="num">${fmt.format(r.hours)}u</td>
+        <td class="num">€${fmt.format(Math.round(r.hoursValue))}</td>
+        ${paidCell}
+        <td class="num" style="color:var(--accent)">${fmt.format(Math.round(r.slices))}</td>
+        <td class="num" style="font-family:var(--serif); font-size:18px;">${fmtPct(pct)}%</td>`;
+      b.appendChild(row);
+    });
+    const tr = document.createElement('tr');
+    tr.className = 'total';
+    const totalInvest = ti > 0 ? `<td class="num">€${fmt.format(ti)}</td>` : '<td class="num">—</td>';
+    const totalContrib = tpc > 0 ? `<td class="num">€${fmt.format(tpc)}</td>` : '<td class="num">—</td>';
+    const totalPaidCell = tp > 0 ? `<td class="num">−€${fmt.format(tp)}</td>` : '<td class="num">—</td>';
+    tr.innerHTML = `
+      <td><strong>Totaal</strong></td>
+      ${totalInvest}
+      ${totalContrib}
+      <td class="num">${fmt.format(th)}u</td>
+      <td class="num">€${fmt.format(Math.round(thv))}</td>
+      ${totalPaidCell}
+      <td class="num">${fmt.format(Math.round(ts))}</td>
+      <td class="num" style="font-family:var(--serif); font-size:18px;">100%</td>`;
+    b.appendChild(tr);
+  }
+
+  function renderLog() {
+    const log = document.getElementById('log');
+    log.innerHTML = '';
+    const sorted = [...state.entries].sort((a,b) => new Date(b.date) - new Date(a.date));
+    if (sorted.length === 0) {
+      log.innerHTML = '<div style="padding:32px; text-align:center; color:var(--text-faint);">Nog geen entries</div>';
+      return;
+    }
+    sorted.forEach(e => {
+      const slices = calcSlices(e);
+      const p = PEOPLE[e.person];
+      const d = new Date(e.date).toLocaleDateString('nl-NL', { day:'2-digit', month:'short', year:'2-digit' });
+      let a = '';
+      if (e.type === 'hours') a = `${e.amount}u`;
+      else if (e.type === 'expense') a = `€${fmt.format(e.amount)} kosten`;
+      else if (e.type === 'paid') a = `−€${fmt.format(e.amount)} uitbetaald`;
+      else if (e.type === 'cash') a = `€${fmt.format(e.amount)} investering`;
+      else if (e.type === 'payout_contrib') a = `€${fmt.format(e.amount)} bijdrage uitbet.`;
+      else a = `€${fmt.format(e.amount)}`;
+      const div = document.createElement('div');
+      div.className = 'log-entry';
+      const sliceColor = slices < 0 ? 'color:var(--red);' : '';
+      div.innerHTML = `
+        <div class="date">${d}</div>
+        <div class="person"><span class="dot" style="background:${p.color}"></span>${p.name}</div>
+        <div class="desc">${a} — ${e.desc || ''}</div>
+        <div class="slices" style="${sliceColor}">${slices < 0 ? '−' : ''}${fmt.format(Math.round(Math.abs(slices)))} slc</div>
+        <div class="delete" data-id="${e.id}">✕</div>`;
+      log.appendChild(div);
+    });
+    log.querySelectorAll('.delete').forEach(b => {
+      b.addEventListener('click', ev => {
+        if (confirm('Entry verwijderen?')) {
+          state.entries = state.entries.filter(e => e.id !== ev.target.dataset.id);
+          saveState(); renderAll();
+        }
+      });
+    });
+  }
+
+  function renderAll() { renderStakeholders(); renderBreakdown(); renderLog(); renderPersonViews(); }
+
+  // ============= PERSON VIEW RENDERING =============
+  function renderPersonViews() {
+    Object.keys(PEOPLE).forEach(key => {
+      const p = PEOPLE[key];
+      const container = document.getElementById('view-' + key);
+      if (!container) return;
+
+      // Calculate person stats
+      const myEntries = state.entries.filter(e => e.person === key);
+      const t = getTotals()[key];
+      const totalSlices = Object.values(getTotals()).reduce((s, x) => s + x.slices, 0);
+      const pct = totalSlices > 0 ? (t.slices / totalSlices) * 100 : 0;
+      const rate = state.settings.rates[key] || 50;
+
+      let entriesHTML = '';
+      if (myEntries.length === 0) {
+        entriesHTML = '<div style="padding:32px; text-align:center; color:var(--text-faint);">Nog geen entries voor ' + p.name + '</div>';
+      } else {
+        const sorted = [...myEntries].sort((a,b) => new Date(b.date) - new Date(a.date));
+        sorted.forEach(e => {
+          const slices = calcSlices(e);
+          const d = new Date(e.date).toLocaleDateString('nl-NL', { day:'2-digit', month:'short', year:'2-digit' });
+          let a = '';
+          if (e.type === 'hours') a = `${e.amount}u`;
+          else if (e.type === 'expense') a = `€${fmt.format(e.amount)} kosten`;
+          else if (e.type === 'paid') a = `−€${fmt.format(e.amount)} uitbetaald`;
+          else if (e.type === 'cash') a = `€${fmt.format(e.amount)} investering`;
+          else if (e.type === 'payout_contrib') a = `€${fmt.format(e.amount)} bijdrage`;
+          else a = `€${fmt.format(e.amount)}`;
+          let typeLabel = e.type === 'hours' ? 'UREN' :
+                          e.type === 'cash' ? 'INVEST' :
+                          e.type === 'payout_contrib' ? 'BIJDRAGE' :
+                          e.type === 'paid' ? 'PAID' :
+                          'KOSTEN';
+          let typeColor = 'color:var(--text-dim);';
+          if (e.type === 'paid') typeColor = 'color:var(--red);';
+          else if (e.type === 'payout_contrib') typeColor = 'color:var(--gold);';
+          else if (e.type === 'cash') typeColor = 'color:var(--text);';
+          const sliceColor = slices < 0 ? 'color:var(--red);' : '';
+          entriesHTML += `
+            <div class="log-entry">
+              <div class="date">${d}</div>
+              <div class="person" style="${typeColor} font-size:10px; letter-spacing:0.15em;">${typeLabel}</div>
+              <div class="desc">${a} — ${e.desc || ''}</div>
+              <div class="slices" style="${sliceColor}">${slices < 0 ? '−' : ''}${fmt.format(Math.round(Math.abs(slices)))} slc</div>
+              <div class="delete" data-id="${e.id}" data-person="${key}">✕</div>
+            </div>`;
+        });
+      }
+
+      // Build cash detail line based on what they have
+      let cashDetail = '';
+      let cashLabel = 'Cash inbreng';
+      if (t.investment > 0 && t.payoutContrib > 0) {
+        cashDetail = `€${fmt.format(t.investment)} invest. + €${fmt.format(t.payoutContrib)} bijdrage`;
+      } else if (t.investment > 0) {
+        cashDetail = 'Directe investering in het bedrijf';
+        cashLabel = 'Investering';
+      } else if (t.payoutContrib > 0) {
+        cashDetail = 'Bijdrage aan uitbetaling partner';
+        cashLabel = 'Bijdrage uitbetaling';
+      } else {
+        cashDetail = 'Geen cash inbreng';
+      }
+      const totalCashIn = t.investment + t.payoutContrib;
+
+      container.innerHTML = `
+        <div class="person-header">
+          <div class="person-label">Persoonlijke pagina</div>
+          <div class="person-name"><span class="dot" style="background:${p.color}; width:14px; height:14px;"></span>${p.name}</div>
+          <div class="person-role">${p.role} · Tarief €${rate}/uur</div>
+        </div>
+
+        <div class="person-stats">
+          <div class="person-stat">
+            <div class="person-stat-label">Uren totaal</div>
+            <div class="person-stat-value">${fmt.format(t.hours)}<span class="unit">u</span></div>
+            <div class="person-stat-detail">≈ €${fmt.format(Math.round(t.hoursValue))} marktwaarde</div>
+          </div>
+          <div class="person-stat" ${totalCashIn === 0 ? 'style="opacity:0.5;"' : ''}>
+            <div class="person-stat-label">${cashLabel}</div>
+            <div class="person-stat-value"><span class="cur">€</span>${fmt.format(totalCashIn)}</div>
+            <div class="person-stat-detail">${cashDetail}</div>
+          </div>
+          <div class="person-stat" ${t.paid > 0 ? '' : 'style="opacity:0.5;"'}>
+            <div class="person-stat-label">Uitbetaald</div>
+            <div class="person-stat-value" ${t.paid > 0 ? 'style="color:var(--red);"' : ''}><span class="cur">−€</span>${fmt.format(t.paid)}</div>
+            <div class="person-stat-detail">Reeds gefactureerd</div>
+          </div>
+          <div class="person-stat highlight">
+            <div class="person-stat-label">Huidig aandeel</div>
+            <div class="person-stat-value">${fmtPct(pct)}<span class="unit">%</span></div>
+            <div class="person-stat-detail">${fmt.format(Math.round(t.slices))} netto slices</div>
+          </div>
+        </div>
+
+        <section class="section">
+          <div class="section-head">
+            <div class="section-num">Alles wat gelogd is</div>
+            <h2 class="section-title">${p.name}'s <em>activiteit</em></h2>
+          </div>
+          <div class="log">${entriesHTML}</div>
+        </section>
+
+        <section class="section">
+          <div class="section-head">
+            <div class="section-num">Nieuwe inbreng</div>
+            <h2 class="section-title">Snel <em>toevoegen</em></h2>
+          </div>
+          <div class="add-entry">
+            <div class="form-grid" style="grid-template-columns: 1fr 1fr 1.5fr auto;">
+              <div class="field">
+                <label>Type</label>
+                <select id="quick-type-${key}">
+                  <option value="hours">Uren</option>
+                  <option value="cash">Directe investering</option>
+                  <option value="payout_contrib">Bijdrage uitbetaling partner</option>
+                  <option value="expense">Kosten (eigen zak)</option>
+                  <option value="paid">Uitbetaling ontvangen</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="quick-amount-label">Aantal uren</label>
+                <input type="number" id="quick-amount-${key}" step="0.1" min="0" placeholder="0">
+              </div>
+              <div class="field">
+                <label>Omschrijving</label>
+                <input type="text" id="quick-desc-${key}" placeholder="Wat heb je gedaan?">
+              </div>
+              <button data-add-for="${key}">Toevoegen</button>
+            </div>
+          </div>
+        </section>
+      `;
+
+      // Wire up delete buttons within this view
+      container.querySelectorAll('.delete').forEach(btn => {
+        btn.addEventListener('click', ev => {
+          const id = ev.target.dataset.id;
+          if (confirm('Entry verwijderen?')) {
+            state.entries = state.entries.filter(e => e.id !== id);
+            saveState(); renderAll();
+          }
+        });
+      });
+
+      // Wire up quick add type label change
+      const typeSel = container.querySelector(`#quick-type-${key}`);
+      const amountLbl = container.querySelector('.quick-amount-label');
+      if (typeSel && amountLbl) {
+        typeSel.addEventListener('change', e => {
+          amountLbl.textContent = e.target.value === 'cash' ? 'Investering in €' :
+                                  e.target.value === 'payout_contrib' ? 'Bijdrage in € (jouw deel)' :
+                                  e.target.value === 'expense' ? 'Kosten in €' :
+                                  e.target.value === 'paid' ? 'Uitbetaald in € (excl. BTW)' : 'Aantal uren';
+        });
+      }
+
+      // Wire up quick add button
+      const addBtn = container.querySelector(`button[data-add-for="${key}"]`);
+      if (addBtn) {
+        addBtn.addEventListener('click', async () => {
+          const type = container.querySelector(`#quick-type-${key}`).value;
+          const amount = parseFloat(container.querySelector(`#quick-amount-${key}`).value);
+          const desc = container.querySelector(`#quick-desc-${key}`).value.trim();
+          if (!amount || amount <= 0) { alert('Vul een geldig bedrag/aantal in'); return; }
+          state.entries.push({
+            id: 'e' + Date.now() + Math.random().toString(36).slice(2,5),
+            date: new Date().toISOString(),
+            person: key, type, amount, desc
+          });
+          saveState(); renderAll();
+        });
+      }
+    });
+  }
+
+  // ============= TAB SWITCHING =============
+  document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.view').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      document.getElementById('view-' + t.dataset.view).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  document.getElementById('entry-type').addEventListener('change', e => {
+    const l = document.getElementById('amount-label');
+    l.textContent = e.target.value === 'cash' ? 'Investering in €' :
+                    e.target.value === 'payout_contrib' ? 'Bijdrage in € (jouw deel)' :
+                    e.target.value === 'expense' ? 'Kosten in €' :
+                    e.target.value === 'paid' ? 'Uitbetaald in € (excl. BTW)' : 'Aantal uren';
+  });
+
+  document.getElementById('add-btn').addEventListener('click', async () => {
+    const person = document.getElementById('entry-person').value;
+    const type = document.getElementById('entry-type').value;
+    const amount = parseFloat(document.getElementById('entry-amount').value);
+    const desc = document.getElementById('entry-desc').value.trim();
+    if (!amount || amount <= 0) { alert('Vul een geldig bedrag/aantal in'); return; }
+    state.entries.push({
+      id: 'e' + Date.now() + Math.random().toString(36).slice(2,5),
+      date: new Date().toISOString(), person, type, amount, desc
+    });
+    document.getElementById('entry-amount').value = '';
+    document.getElementById('entry-desc').value = '';
+    saveState(); renderAll();
+  });
+
+  document.getElementById('save-settings').addEventListener('click', async () => {
+    state.settings.multiplier = parseFloat(document.getElementById('setting-multiplier').value) || 4;
+    ['sem','renzo','arthur','stan'].forEach(p => {
+      state.settings.rates[p] = parseFloat(document.getElementById('setting-rate-' + p).value) || 50;
+    });
+    saveState(); renderAll();
+  });
+
+  document.getElementById('reset-data').addEventListener('click', async () => {
+    if (confirm('Alle data wissen en opnieuw beginnen?')) {
+      seedInitialData(); saveState(); renderAll();
+    }
+  });
+
+  document.getElementById('export-data').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'equity-' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  function loadInputs() {
+    document.getElementById('setting-multiplier').value = state.settings.multiplier;
+    ['sem','renzo','arthur','stan'].forEach(p => {
+      document.getElementById('setting-rate-' + p).value = state.settings.rates[p];
+    });
+  }
+
+  (function init() {
+    const had = loadState();
+    if (!had) { seedInitialData(); saveState(); }
+    loadInputs(); renderAll();
+    document.getElementById('last-updated').textContent =
+      'BIJGEWERKT: ' + new Date().toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' }).toUpperCase();
+  })();
+</script>
+</body>
+</html>
